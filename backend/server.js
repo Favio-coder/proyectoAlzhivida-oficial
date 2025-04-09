@@ -11,8 +11,10 @@ app.use(express.json());
 
 //Rutas 
 const usuariosRoutes = require("./src/routes/usuariosRoutes")
+const pruebaRoute = require("./src/routes/pruebaRoute")
 
 app.use("/listUsuarios", usuariosRoutes)
+app.use("/prueba", pruebaRoute)
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => 
