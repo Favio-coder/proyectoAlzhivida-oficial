@@ -7,7 +7,7 @@ const esquemaRegistro = Joi.object({
     contrasena: Joi.string().min(8).required(),
     fechaNacimiento: Joi.date().required(),
     genero: Joi.string().min(2).max(15).required(),
-    foto: Joi.string().required(),
+    foto: Joi.string().allow('').optional(),
     pais: Joi.string().required(),
 })
 

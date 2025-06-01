@@ -33,7 +33,7 @@ const CorreoVerificacionService = {
     // Enviar el código por correo
     await enviarCodigoPorCorreo(correo, codigo);
 
-    return { mensaje: `Código enviado con exito a ${correo} y el código es ${codigo}`};
+    return { mensaje: `Código enviado con exito a ${correo}`, codigo: codigo};
   },
 
   obtenerCodigo:  (correo) => {
@@ -103,7 +103,7 @@ const CorreoVerificacionService = {
     // Enviar el código por correo
     await enviarCodigoPorCorreoContrasena(correo, codigo);
 
-    return { mensaje: `Código enviado con exito a ${correo} y el código es ${codigo}`};
+    return { mensaje: `Código enviado con exito a ${correo} y el código es ${codigo}`, codigo: codigo};
   },
   verificarCodigoContrasena: async (correo, codigoIngresado) => {
       const registro = codigosVerificacion[correo];
