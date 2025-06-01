@@ -16,6 +16,8 @@ import Swal from 'sweetalert2'
 
 //Importar servicios 
 import { verificarEmail, verificarCodigo, registrarCuidadorNoProfesional  } from '../services/autenticacionService'
+import { setGlobalLoadingHandler } from "../api/apiAutenticacion";
+import Loading from "../layouts/Loading";
 
 function Register() {
   const [step, setStep] = useState(1);
@@ -32,6 +34,13 @@ function Register() {
   const [pais, setPais] = useState("");
   const [fechaNacimiento, setFechaNacimiento] = useState("");
   const [aceptoTerminos, setAceptoTerminos] = useState(false);
+  const [loading, setLoading] = useState(false)
+  
+  //Use effect para el icono de carga
+  useEffect(() => {
+    setGlobalLoadingHandler(setLoading);
+  }, [])
+
 
   // Tiempo para volver a enviar otro código 
   const [timer, setTimer] = useState(0)
@@ -322,6 +331,8 @@ function Register() {
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#835ec0] via-[#8d68e9de] to-[#5f4ec4] flex flex-col items-center">
+      {loading && <Loading></Loading>}
+      
       <HeaderMod />
       
       <div className="relative bg-white border-4 mt-30 border-gray-100 px-8 py-10 rounded-3xl shadow-xl w-[80%] max-w-sm text-center before:content-[''] before:absolute before:top-4 before:left-4 before:w-70 before:h-[8px] before:bg-[#7F5AFA] after:content-[''] after:absolute after:bottom-3 after:left-4 after:w-70 after:h-[8px] after:bg-[#7F5AFA]">
