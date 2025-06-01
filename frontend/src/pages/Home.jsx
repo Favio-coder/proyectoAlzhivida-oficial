@@ -197,8 +197,8 @@ function Home() {
             {/* Plan Premium 1 mes */}
             <div className="bg-white rounded-xl shadow-md p-6 border">
               <h3 className="text-xl font-semibold text-[#6f3aff] mb-2">Premium / 1 mes</h3>
-              <p className="line-through text-gray-400 text-sm">$14.99</p>
-              <p className="text-4xl font-bold text-[#5902c3] mb-2">$9.99<span className="text-base font-medium">/mes</span></p>
+              <p className="line-through text-gray-400 text-sm">S/.14.99</p>
+              <p className="text-4xl font-bold text-[#5902c3] mb-2">S/.9.99<span className="text-base font-medium">/mes</span></p>
               <p className="text-sm text-gray-600 mb-4">Aprende de varios temas en la semana</p>
               <ul className="text-left space-y-2 text-sm text-gray-600 mb-6">
                 <li>✅ Varios Tickets para Zoom</li>

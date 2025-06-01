@@ -1,10 +1,21 @@
-import { useState } from "react";
+/**
+ Creado por: Brittany Gonzales Quiñonez
+ Modificado por: Richard Favio Asturimac Medina - faviusam@gmail.com 
+ Ultima modificación: 31/05/2025
+*/
+
+import { useEffect, useState } from "react";
+import HeaderMod from "../layouts/HeaderMod";
 import Header from "../layouts/Header";
 import { Link } from "react-router-dom";
 import logoAlzhivida from "/images/logoalzhivida.png";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import "@fontsource/signika-negative";
 import { useNavigate } from "react-router-dom";
+import Swal from 'sweetalert2'
+
+//Importar servicios 
+import { verificarEmail, verificarCodigo, registrarCuidadorNoProfesional  } from '../services/autenticacionService'
 
 function Register() {
   const [step, setStep] = useState(1);
@@ -22,51 +33,253 @@ function Register() {
   const [fechaNacimiento, setFechaNacimiento] = useState("");
   const [aceptoTerminos, setAceptoTerminos] = useState(false);
 
+  // Tiempo para volver a enviar otro código 
+  const [timer, setTimer] = useState(0)
+   useEffect(() => {
+    let interval = null;
+    if (timer > 0) {
+      interval = setInterval(() => {
+        setTimer((prev) => prev - 1)
+      }, 1000);
+    } else if (timer === 0) {
+      clearInterval(interval)
+    }
+    return () => clearInterval(interval)
+  }, [timer])
+
+  const startTimer = () => {
+    setTimer(200); 
+  };
+
+
   const toggleVisibility = (type) => {
     if (type === "password") setShowPassword((prev) => !prev);
     if (type === "repeat") setShowRepeatPassword((prev) => !prev);
   };
 
-  const handleVerifyEmail = (e) => {
+  const esEmailVerificado = (e) => {
     e.preventDefault();
-    if (email.trim()) setStep(2);
-  };
 
-  const handleVerifyCode = (e) => {
-    e.preventDefault();
-    if (code.trim()) setStep(3);
-  };
+    if (!email.trim()) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Inserta un correo electrónico válido para continuar',
+        confirmButtonText: 'Entendido',
+      });
+      return;
+    }
+
+  const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailValido.test(email)) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Inserta un correo electrónico válido para continuar',
+        confirmButtonText: 'Entendido'
+      });
+      return;
+    }
+
+    verificarEmail(email)
+      .then(response => {
+        const mensaje = response.data.mensaje;
+
+        if (mensaje.trim() === 'Ya se ha enviado un código recientemente') {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Código ya fue enviado',
+            text: 'Ya se ha enviado un código recientemente a tu correo.',
+            confirmButtonText: 'Entendido',
+            footer: '<a href="#" id="ir-step-2">Haz clic aquí para ingresar el código</a>',
+          })
+          return
+        }
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Correo enviado',
+          text: 'Revisa tu bandeja de entrada o spam para ingresar el código',
+          confirmButtonText: 'Entendido'
+        });
+
+        setStep(2)
+
+        startTimer()
+      })
+      .catch(error => {
+        if (error.response && error.response.status === 400) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Opps!! ' + error.response.data?.mensaje ,
+            confirmButtonText: 'Entendido'
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo enviar el correo. Intenta nuevamente.',
+            confirmButtonText: 'Entendido'
+          })
+        }
+        console.error('Error Axios:', error);
+      })
+  }
+
+
+  const esCodigoVerificado = (e) => {
+    e.preventDefault()
+
+
+    if (!code.trim()){
+        Swal.fire(
+          {icon:'error',
+          title: 'Error',
+          text: 'Inserta el código enviado al correo electrónico para continuar',
+          confirmButtonText: 'Entendido'
+        }
+        )
+        return
+    }
+
+    try{
+      verificarCodigo(email,code).then((response) => {
+        if(!response.data.valido){
+          Swal.fire(
+            {
+              icon:'error',
+              title: 'Error',
+              text: 'El código insertado no es correcto',
+              confirmButtonText: 'Entendido'
+            }
+          )
+        }else{
+          Swal.fire(
+            {
+              icon:'success',
+              title: 'Existo',
+              text: 'El código insertado  es correcto',
+              confirmButtonText: 'Entendido'
+            }
+          )
+
+          setStep(3)
+        }
+
+
+      })
+
+    }catch(err){
+      console.error("Existe un error: ", err)
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo validar el código. Intenta nuevamente',
+        confirmButtonText: 'Entendido'
+      })
+    }
+
+  }
+
+  const reEnviarCodigo = () => {
+    if (timer === 0) {
+      verificarEmail(email)
+        .then(() => {
+          Swal.fire({
+            icon: "success",
+            title: "Correo reenviado",
+            text: "Se ha reenviado el código a tu correo.",
+            confirmButtonText: "Entendido",
+          });
+          startTimer(); 
+        })
+        .catch(() => {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "No se pudo reenviar el código. Intenta más tarde.",
+            confirmButtonText: "Entendido",
+          });
+        });
+    }
+  }
+
+  const formatTimer = (time) => {
+    const min = Math.floor(time / 60);
+    const sec = time % 60;
+    return `${min.toString().padStart(2, "0")}:${sec.toString().padStart(2, "0")}`;
+  }
+
 
   const handleCreateAccount = (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (password === repeatPassword && password.length >= 8) {
-    setStep(4); // Esto es lo que debe activar el formulario del paso 4
-  } else {
-    alert("Las contraseñas no coinciden o no cumplen con los requisitos");
+    if (password !== repeatPassword) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Las contraseñas no coinciden',
+        confirmButtonText: 'Entendido'
+      });
+    } else if (password.length < 8) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'La contraseña debe tener al menos 8 caracteres',
+        confirmButtonText: 'Entendido'
+      });
+    } else {
+      setStep(4);
+    }
   }
-};
+
+  //Usar navigate para irte a otra carpeta
   const navigate = useNavigate();
 
-  const handleSubmitDatosPersonales = (e) => {
-  e.preventDefault();
+  const handleSubmitDatosPersonales = async (e) => {
+    e.preventDefault();
 
-  if (!aceptoTerminos) {
-    alert("Debes aceptar los términos y condiciones");
-    return;
-  }
+    if (!aceptoTerminos) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Términos no aceptados',
+        text: 'Debes aceptar los términos y condiciones para continuar',
+        confirmButtonText: 'Entendido'
+      });
+      return;
+    }
 
-  console.log({
-    nombres,
-    apellidos,
-    genero,
-    pais,
-    fechaNacimiento,
-  });
+    const data = {
+      nombre: nombres,
+      apellido: apellidos,
+      fechaNacimiento: fechaNacimiento,
+      genero: genero,
+      foto: '',
+      pais: pais,
+      contrasena: password,
+      correo: email
+    }
 
-  // Redirigir al finalizar exitosamente
-  navigate("/sessions");
-};
+    try {
+      const response = await registrarCuidadorNoProfesional(data);
+
+      // Solo navega si la respuesta fue exitosa
+      navigate("/sessions");
+    } catch (err) {
+      console.error("Existe un error: ", err);
+
+      // Errores que no atrapa el interceptor
+      if (!err.response) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudo conectar con el servidor. Intenta más tarde.',
+          confirmButtonText: 'Aceptar'
+        });
+      }
+    }
+  };
 
   const getPasswordStrength = () => {
     if (!password) return "";
@@ -98,10 +311,22 @@ function Register() {
       ? "text-yellow-600"
       : "text-red-600";
 
+  document.addEventListener('click', function (e) {
+    if (e.target && e.target.id === 'ir-step-2') {
+      e.preventDefault()
+      setStep(2)
+      Swal.close() 
+    }
+  })
+
+  
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#835ec0] via-[#8d68e9de] to-[#5f4ec4] flex flex-col items-center">
-      <Header />
+      <HeaderMod />
+      
       <div className="relative bg-white border-4 mt-30 border-gray-100 px-8 py-10 rounded-3xl shadow-xl w-[80%] max-w-sm text-center before:content-[''] before:absolute before:top-4 before:left-4 before:w-70 before:h-[8px] before:bg-[#7F5AFA] after:content-[''] after:absolute after:bottom-3 after:left-4 after:w-70 after:h-[8px] after:bg-[#7F5AFA]">
+        
+        {/* Logo y nombre de Alzhivida */}
         <div className="flex flex-col items-center mb-6">
           <img src={logoAlzhivida} alt="Logo" className="w-30 h-auto mb-2" />
           <h1 className="!text-3xl !font-signika !font-bold !text-[#5F16BF]">Alzhivida</h1>
@@ -109,18 +334,17 @@ function Register() {
 
         {step === 1 && (
           <>
-            <div className="bg-green-500 text-white font-semibold px-4 py-2 rounded mb-6 text-sm leading-tight">
-              Recuerda: Verificar el correo electrónico es importante antes de crear una cuenta
+            <div className="bg-green-500 text-white  px-4 py-2 rounded mb-6 text-sm leading-tight">
+              <span className="font-semibold">Recuerda: </span> Verificar el correo electrónico es importante antes de crear una cuenta
             </div>
-            <form onSubmit={handleVerifyEmail} className="space-y-4 text-left">
+            <form onSubmit={esEmailVerificado} className="space-y-4 text-left">
               <label className="block text-sm font-medium text-gray-700">Ingresa tu correo electrónico</label>
               <input
-                type="email"
+                type="text"
                 placeholder="Correo electrónico"
                 className="w-full px-4 py-2 rounded bg-gray-100 border focus:outline-none"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                required
               />
               <button type="submit" className="mt-4 w-full bg-[#9178ff] text-white font-semibold py-2 rounded hover:bg-[#6d4df7] transition">
                 VERIFICAR CORREO
@@ -135,7 +359,7 @@ function Register() {
 
         {step === 2 && (
           <>
-            <form onSubmit={handleVerifyCode} className="space-y-4 text-left">
+            <form onSubmit={esCodigoVerificado} className="space-y-4 text-left">
               <label className="block text-sm font-medium text-gray-700 mb-2.5">Inserta el código</label>
               <input
                 type="text"
@@ -143,11 +367,19 @@ function Register() {
                 className="w-full px-4 py-2 rounded bg-gray-100 border !focus:outline-none"
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
-                required
               />
               <p className="text-sm text-gray-600 text-left mt-1">
                 Volver a reenviar el código{" "}
-                <span className="text-purple-600 hover:underline cursor-pointer">click aquí</span>
+                <span
+                className={`text-purple-600 hover:underline ${
+                  timer > 0 ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+                }`}
+                onClick={() => {
+                  if (timer === 0) reEnviarCodigo();
+                }}
+              >
+                {timer > 0 ? `(${formatTimer(timer)})` : "click aquí"}
+              </span>
               </p>
               <button type="submit" className="mt-2 w-full bg-[#9178ff] text-white font-semibold py-2 rounded hover:bg-[#6d4df7] transition">
                 VERIFICAR CÓDIGO
@@ -174,6 +406,7 @@ function Register() {
               />
               <button
                 type="button"
+                aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                 onClick={() => toggleVisibility("password")}
                 className="absolute right-3 top-3 text-gray-600"
               >
@@ -221,7 +454,6 @@ function Register() {
               className="w-full px-4 py-2 rounded bg-gray-100 border !focus:outline-none"
               value={nombres}
               onChange={(e) => setNombres(e.target.value)}
-              required
             />
           </div>
 
@@ -233,7 +465,6 @@ function Register() {
               className="w-full px-4 py-2 rounded bg-gray-100 border focus:outline-none"
               value={apellidos}
               onChange={(e) => setApellidos(e.target.value)}
-              required
             />
           </div>
 
@@ -244,7 +475,6 @@ function Register() {
                 className="w-full px-4 py-2 rounded bg-gray-100 border focus:outline-none"
                 value={genero}
                 onChange={(e) => setGenero(e.target.value)}
-                required
               >
                 <option value="">Género</option>
                 <option value="Femenino">Femenino</option>
@@ -260,7 +490,6 @@ function Register() {
                 className="w-full px-4 py-2 rounded bg-gray-100 border focus:outline-none"
                 value={pais}
                 onChange={(e) => setPais(e.target.value)}
-                required
               >
                 <option value="">País</option>
                 <option value="Argentina">Argentina</option>
@@ -293,7 +522,6 @@ function Register() {
                 className="w-full px-4 py-2 rounded bg-gray-100 border focus:outline-none"
                 value={fechaNacimiento}
                 onChange={(e) => setFechaNacimiento(e.target.value)}
-                required
               />
             </div>
 
@@ -302,7 +530,6 @@ function Register() {
                 type="checkbox"
                 checked={aceptoTerminos}
                 onChange={(e) => setAceptoTerminos(e.target.checked)}
-                required
               />
               <label className="text-sm ml-2">Aceptar términos y condiciones</label>
             </div>
