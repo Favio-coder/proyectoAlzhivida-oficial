@@ -41,7 +41,7 @@ function Home() {
         answer: "Sí. Tienes que registrarte para acceder a dos clases gratuitas, te animamos pero a suscribirte para que puedas acceder a más beneficios",
       },
       {
-        question: "¿Alzhivda es gratuito?",
+        question: "¿Alzhivida es gratuito?",
         answer: "Sí, al igual que los docentes de la plataforma Alzhivida busca que cualquier persona pueda acceder a esta información, es por ello que puedes acceder con una cuenta básica y obtener tickets semanales.",
       },
 
