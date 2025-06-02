@@ -75,11 +75,11 @@ function HeaderMod () {
           {isOpen && (
       <div className="lg:hidden bg-white mt-4 rounded-xl shadow-lg px-4 py-4 flex flex-col items-center gap-2 animate-fade-in">
         {[
-          { nombre: "Nosotros", enlace: "#nosotros" },
-          { nombre: "Suscripción", enlace: "#suscripcion" },
-          { nombre: "Docente", enlace: "#docente" },
-          { nombre: "Preguntas", enlace: "#preguntas" },
-          { nombre: "Contacto", enlace: "#contacto" }
+          { nombre: "Nosotros", enlace: "/#nosotros" },
+          { nombre: "Suscripción", enlace: "/#suscripcion" },
+          { nombre: "Docente", enlace: "/#docente" },
+          { nombre: "Preguntas", enlace: "/#preguntas" },
+          { nombre: "Contacto", enlace: "/#contacto" }
         ].map((item, index) => (
           <a
             key={index}

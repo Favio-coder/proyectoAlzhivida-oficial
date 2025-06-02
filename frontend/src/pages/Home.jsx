@@ -6,6 +6,7 @@ import fondo01 from "/images/fondo01.png";
 import logoAlzhivida from "/images/logoalzhivida.png";
 import imagenDocente from "/images/imagen_docente.jpg";
 import { Wrench, Boxes, BookOpen } from 'lucide-react';
+import { Link } from "react-router-dom";
 
 function Counter({ end }) {
   const [count, setCount] = useState(0);
@@ -81,19 +82,19 @@ function Home() {
           <p className="mt-4 text-lg md:text-xl text-black font-medium max-w-md">
             "Aquí comienza una red de apoyo real para ti, tu familia y todos quienes necesitan una guía en este camino."
           </p>
-          <a
-            href="#videos"
-            className=" text-decoration-none inline-block mt-4 px-8 py-1 rounded-full text-white text-lg font-semibold 
-              bg-[#9162f7] hover:bg-[#6d4df7] transition-all duration-300 
-              shadow-md hover:shadow-xl border-[5px] border-transparent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#5e3aff]"
-          >
-            Ingresa Ahora
-          </a>
+          <Link
+          to="/login"
+          className="text-decoration-none inline-block mt-4 px-8 py-1 rounded-full text-white text-lg font-semibold 
+            bg-[#9162f7] hover:bg-[#6d4df7] transition-all duration-300 
+            shadow-md hover:shadow-xl border-[5px] border-transparent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#5e3aff]"
+        >
+          Ingresa Ahora
+        </Link>
         </div>
       </section>
 
       {/* Sección de nosotros */}
-     <section className="bg-[#f3f6fb] text-gray-800 py-16 px-6 md:px-20">
+     <section id="nosotros" className="bg-[#f3f6fb] scroll-mt-24 text-gray-800 py-16 px-6 md:px-20">
         <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12">
           {/* Texto izquierdo */}
           <div className="flex flex-col justify-center">
@@ -106,13 +107,15 @@ function Home() {
             <p className="text-gray-600 mt-3 mb-6">
               Buscamos mejorar la calidad de vida de los cuidadores, reducir la sobrecarga emocional y fomentar una comunidad de apoyo, promoviendo el bienestar tanto de los cuidadores como de los pacientes.
             </p>
-            <button className="text-sm font-semibold !px-1 !py-2 !rounded-xl bg-[#9b65ff] text-white hover:bg-[#6d4df7] transition-all duration-300 shadow-sm hover:shadow-md">
-              UNA COMUNIDAD MÁS GRANDE CONTIGO
-            </button>
+            <Link to="/register">
+              <button className="text-sm font-semibold !px-2 !py-2 !rounded-xl bg-[#9b65ff] text-white hover:bg-[#6d4df7] transition-all duration-300 shadow-sm hover:shadow-md">
+                UNA COMUNIDAD MÁS GRANDE CONTIGO
+              </button>
+            </Link>
           </div>
 
           {/* Servicios a la derecha */}
-          <div className="relative pl-15 space-y-16 border-l-2 border-gray-300">
+          <div className="relative ml-4 pl-35 space-y-16 border-l-2 border-gray-300">
             {/* Línea con íconos */}
             <div className="absolute left-[-32px] top-0 space-y-29 pl-2">
               <div className="w-14 h-14 bg-[#726bff] rounded-md flex items-center justify-center">
@@ -189,9 +192,11 @@ function Home() {
                 <li>✅ Acceso a la plataforma de comunidad </li>
                 <li>✅ Publica y comenta en nuestra plataforma </li>
               </ul>
+              <Link to="/register">
               <button className="bg-gray-300 text-gray-800 font-semibold   mb-4  px-6 py-2 rounded hover:bg-gray-400 transition">
                 Empezar Gratis
               </button>
+              </Link>
             </div>
 
             {/* Plan Premium 1 mes */}
@@ -206,9 +211,11 @@ function Home() {
                 <li>✅ Acceso a clases con todos los docentes</li>
                 <li>✅ Disfruta de participar en la comunidad</li>
               </ul>
+              <Link to="/register">
               <button className="bg-[#9567ff] text-white font-semibold px-6 py-2 rounded hover:bg-[#6e23f9] transition">
                 Suscribirme
               </button>
+              </Link>
             </div>
           </div>
         </div>
