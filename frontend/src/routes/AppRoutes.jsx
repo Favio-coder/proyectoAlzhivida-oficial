@@ -6,6 +6,7 @@ import Sessions from "../pages/Sessions";
 import NoEncontrado from "../pages/NoEncontrado";
 import Principal from "../pages/Principal";
 import Forgotten from "../pages/Forgotten"; 
+import Prueba from "../layouts/Prueba";
 
 function AppRoutes() {
   return (
@@ -17,6 +18,7 @@ function AppRoutes() {
         <Route path="/sessions" element={<Sessions />} /> 
         <Route path="/principal" element={<Principal/>} />
         <Route path="/forgotten" element={<Forgotten />} />
+        <Route path="/prueba" element={<Prueba/>}/>
         <Route path="*" element={<NoEncontrado />} />
       </Routes>
     </Router>

@@ -77,8 +77,9 @@ const AutenticacionService = {
             //Recuperar la contraseña anterior 
             const hashGuardado = await AutenticacionRepositorio.recuperarContrasena(dataUsuario)
 
-            const coincidencia = await bcrypt.compare(dataUsuario.anteriorContrasena, hashGuardado.contrasena.recordset[0].l_contraUsua)
+            const coincidencia = await bcrypt.compare(dataUsuario.anteriorContrasena, hashGuardado.contrasena)
             
+
             if(!coincidencia){
                 throw new Error('La contraseña anterior no coincide')
             }
@@ -108,20 +109,20 @@ const AutenticacionService = {
 
 
             const recuperado = await AutenticacionRepositorio.recuperarCredenciales(dataUsuario)
-            
 
             if (
                 !recuperado.credenciales ||
-                !Array.isArray(recuperado.credenciales.recordset) ||
-                recuperado.credenciales.recordset.length === 0
+                typeof recuperado.credenciales !== 'object' ||
+                !recuperado.credenciales.l_emailUsua ||
+                !recuperado.credenciales.l_contraUsua
             ) {
                 throw new Error('El correo electrónico no es correcto o no existe');
             }
 
 
             const credenciales = {
-                l_emailUsua: recuperado.credenciales.recordset[0].l_emailUsua,
-                l_contraUsua: recuperado.credenciales.recordset[0].l_contraUsua
+                l_emailUsua: recuperado.credenciales.l_emailUsua,
+                l_contraUsua: recuperado.credenciales.l_contraUsua
             }
 
 
@@ -134,8 +135,7 @@ const AutenticacionService = {
 
             //Recuperar usuario 
             const usuarioRecuperado = await AutenticacionRepositorio.recuperarUsuario(dataUsuario)
-
-            return usuarioRecuperado.recordset[0]
+            return usuarioRecuperado
         }catch(err){
             console.error("Existe un error: ", err)
             throw err
