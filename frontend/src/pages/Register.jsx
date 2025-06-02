@@ -6,13 +6,14 @@
 
 import { useEffect, useState } from "react";
 import HeaderMod from "../layouts/HeaderMod";
-import Header from "../layouts/Header";
 import { Link } from "react-router-dom";
 import logoAlzhivida from "/images/logoalzhivida.png";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import "@fontsource/signika-negative";
 import { useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2'
+import { MdEmail, MdLock } from "react-icons/md";
+
 
 //Importar servicios 
 import { verificarEmail, verificarCodigo, registrarCuidadorNoProfesional  } from '../services/autenticacionService'
@@ -271,7 +272,7 @@ function Register() {
     }
 
     try {
-      const response = await registrarCuidadorNoProfesional(data);
+      await registrarCuidadorNoProfesional(data);
 
       // Solo navega si la respuesta fue exitosa
       navigate("/sessions");
@@ -330,41 +331,53 @@ function Register() {
 
   
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#835ec0] via-[#8d68e9de] to-[#5f4ec4] flex flex-col items-center">
+  <div className="min-h-screen pb-16 bg-gradient-to-br from-[#835ec0] via-[#8d68e9de] to-[#5f4ec4] flex flex-col items-center">
       {loading && <Loading></Loading>}
       
       <HeaderMod />
       
-      <div className="relative bg-white border-4 mt-30 border-gray-100 px-8 py-10 rounded-3xl shadow-xl w-[80%] max-w-sm text-center before:content-[''] before:absolute before:top-4 before:left-4 before:w-70 before:h-[8px] before:bg-[#7F5AFA] after:content-[''] after:absolute after:bottom-3 after:left-4 after:w-70 after:h-[8px] after:bg-[#7F5AFA]">
+      <div className="relative bg-white border-4 mt-30 border-gray-100 px-8 py-10 rounded-3xl shadow-xl w-80 max-w-sm text-center before:content-[''] before:absolute before:top-4 before:left-4 before:w-70 before:h-[8px] before:bg-[#7F5AFA] after:content-[''] after:absolute after:bottom-3 after:left-4 after:w-70 after:h-[8px] after:bg-[#7F5AFA]">
         
         {/* Logo y nombre de Alzhivida */}
-        <div className="flex flex-col items-center mb-6">
+        <div className="flex flex-col items-center mb-1">
           <img src={logoAlzhivida} alt="Logo" className="w-30 h-auto mb-2" />
           <h1 className="!text-3xl !font-signika !font-bold !text-[#5F16BF]">Alzhivida</h1>
         </div>
 
         {step === 1 && (
           <>
-            <div className="bg-green-500 text-white  px-4 py-2 rounded mb-6 text-sm leading-tight">
+            <div className="bg-[#12a4289b] text-white  px-4 py-2   text-sm leading-tight">
               <span className="font-semibold">Recuerda: </span> Verificar el correo electrónico es importante antes de crear una cuenta
             </div>
-            <form onSubmit={esEmailVerificado} className="space-y-4 text-left">
-              <label className="block text-sm font-medium text-gray-700">Ingresa tu correo electrónico</label>
-              <input
-                type="text"
-                placeholder="Correo electrónico"
-                className="w-full px-4 py-2 rounded bg-gray-100 border focus:outline-none"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <button type="submit" className="mt-4 w-full bg-[#9178ff] text-white font-semibold py-2 rounded hover:bg-[#6d4df7] transition">
-                VERIFICAR CORREO
-              </button>
-            </form>
-            <p className="text-sm mt-4 text-center">
+            <form onSubmit={esEmailVerificado} className="space-y-4 mt-3 text-left">
+               <label className="block text-sm font-medium text-gray-700">Ingresa tu correo electrónico</label>
+                <div className="relative">
+                  <MdEmail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
+                  <input
+                    type="email"
+                    placeholder="Correo electrónico"
+                    className="w-full pl-10 pr-3 py-2 rounded-md bg-[#f5f5f5] border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#7F5AFA]"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="mt-4 w-full bg-[#7F5AFA] text-white font-semibold py-2 hover:bg-[#6a4fd2] transition"
+                >
+                  VERIFICAR CORREO
+                </button>
+              </form>
+                       
+            <Link
+              to="/login"
+              className="block text-sm mt-3 text-center text-black cursor-pointer !no-underline"
+            >
               Ya tengo una cuenta creada{" "}
-              <Link to="/login" className="text-purple-600 hover:underline">Iniciar sesión</Link>
-            </p>
+              <span className="text-[#7a14ff] font-semibold hover:underline">Iniciar sesión</span>
+            </Link>
+
           </>
         )}
 
@@ -392,14 +405,17 @@ function Register() {
                 {timer > 0 ? `(${formatTimer(timer)})` : "click aquí"}
               </span>
               </p>
-              <button type="submit" className="mt-2 w-full bg-[#9178ff] text-white font-semibold py-2 rounded hover:bg-[#6d4df7] transition">
+              <button type="submit" className="mt-2 w-full bg-[#7F5AFA] text-white font-semibold py-2  hover:bg-[#6a4fd2] transition">
                 VERIFICAR CÓDIGO
               </button>
             </form>
-            <p className="text-sm mt-2 text-center">
+            <Link
+              to="/login"
+              className="block text-sm mt-3 text-center text-black cursor-pointer !no-underline"
+            >
               Ya tengo una cuenta creada{" "}
-              <Link to="/login" className="text-purple-600 hover:underline">Iniciar sesión</Link>
-            </p>
+              <span className="text-[#7a14ff] font-semibold hover:underline">Iniciar sesión</span>
+            </Link>
           </>
         )}
 
@@ -448,7 +464,7 @@ function Register() {
 
             <button
               type="submit"
-              className="mt-1 w-full bg-[#9178ff] text-white font-semibold py-2 rounded hover:bg-[#6d4df7] transition mb-4"
+              className="mt-1 w-full bg-[#7F5AFA] text-white font-semibold py-2  hover:bg-[#6a4fd2] transition mb-4"
             >
               CONTINUAR
             </button>
@@ -547,7 +563,7 @@ function Register() {
 
             <button
               type="submit"
-              className="w-full bg-[#9178ff] text-white font-semibold py-2 rounded hover:bg-[#6d4df7] transition"
+              className="w-full bg-[#7F5AFA] text-white font-semibold py-2  hover:bg-[#6a4fd2] transition"
             >
               CREAR CUENTA
             </button>
