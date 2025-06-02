@@ -271,7 +271,8 @@ function Register() {
     }
 
     try {
-      const response = await registrarCuidadorNoProfesional(data);
+      await registrarCuidadorNoProfesional(data);
+
 
       // Solo navega si la respuesta fue exitosa
       navigate("/sessions");

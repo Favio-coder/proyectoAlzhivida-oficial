@@ -112,7 +112,7 @@ function Home() {
           </div>
 
           {/* Servicios a la derecha */}
-          <div className="relative pl-15 space-y-16 border-l-2 border-gray-300">
+          <div className="relative pl-15 space-y-16 border-l-2 border-gray-300 sm:mr-3">
             {/* Línea con íconos */}
             <div className="absolute left-[-32px] top-0 space-y-29 pl-2">
               <div className="w-14 h-14 bg-[#726bff] rounded-md flex items-center justify-center">
