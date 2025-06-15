@@ -97,6 +97,16 @@ apiAutenticacion.interceptors.response.use(response => {
       return Promise.reject(error);
     }
 
+    //Errores desconocidos 
+    if (errorCode === 'ERR_NETWORK' || mensaje.includes('blocked') || mensaje.includes('NetworkError')) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error de red o CORS',
+        text: 'No se pudo conectar con el servidor. Verifica tu red o los permisos del navegador.',
+        confirmButtonText: 'Revisar'
+      });
+    }
+
   }
 
   return Promise.reject(error);
