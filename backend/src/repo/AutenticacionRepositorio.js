@@ -201,10 +201,23 @@ const AutenticacionRepositorio = {
                 [correo]
             );
 
+            const [nomUsuario] =  await pool.execute(
+                `Select l_nomUsua from Usuario where l_emailUsua = ?`,
+                [correo]
+            )
+
+            const nomUsuariBusc = nomUsuario[0].l_nomUsua
+            
+            console.log("Esto es nombre de usuario: ")
+            console.log(nomUsuario[0].l_nomUsua)
 
             // Verificar si ya existe
             if (rows.length > 0) {
-                throw new Error("Ya existe un usuario con ese correo electrónico.");
+                if(nomUsuariBusc === ''){
+                    throw new Error("Se intento crear una cuenta con este correo electrónico")
+                }else{
+                    throw new Error("Ya existe un usuario con ese correo electrónico.")
+                }
             }
 
             return {

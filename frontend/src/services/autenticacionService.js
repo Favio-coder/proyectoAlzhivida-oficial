@@ -11,3 +11,7 @@ export const verificarCodigo = (email, codigo) => {
 export const registrarCuidadorNoProfesional = (data) => {
   return apiAutenticacion.post('/registrarCuidadorNoProfesional', data)
 }
+
+export const loginUsuario = (data) => {
+  return apiAutenticacion.post('/iniciarSesion', data)
+}

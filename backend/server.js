@@ -15,6 +15,13 @@ app.use(express.json());
 const autenticacionRoutes = require('../backend/src/routes/AutenticacionRoute')
 app.use('/api/autenticacion', autenticacionRoutes) // http://localhost:3001/api/v2/autenticacion/buscarId
 const PORT = process.env.PORT || 3001;
+
+//Desarrollo
 app.listen(PORT, () => 
     console.log(`Servidor en http://localhost:${PORT}`
 ));
+
+//Despligue en misma red
+// app.listen(PORT, '0.0.0.0', () => {
+//   console.log(`Servidor escuchando en http://0.0.0.0:${PORT}`);
+// });
