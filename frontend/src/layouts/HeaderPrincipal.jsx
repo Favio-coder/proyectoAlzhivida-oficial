@@ -9,6 +9,12 @@ import Modal from "../components/Modal";
 import ModalEditPerfil from "../components/ModalEditPerfil";
 import ModalModContrasena from "../components/ModalModContrasena";
 
+
+//Store
+import { useAuthStore } from "../store/authStore";
+import { useNavigate } from "react-router-dom";
+
+
 function HeaderPrincipal() {
   const [isOpen, setIsOpen] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
@@ -18,36 +24,42 @@ function HeaderPrincipal() {
 
   const [editPerfilOpen, setEditPerfilOpen] = useState(false)
 
+  //Uso del Store 
+  const logout = useAuthStore((state) => state.logout)
+  const navigate = useNavigate()
+  const usuarioGlobal = useAuthStore((state) => state.user)
+
+
   const abrirMiniVentana = ({tipo}) => {
-      // Tipo 1: Para notificaciones 
-      // Tipo 2: Para más función de perfil 
+    // Tipo 1: Para notificaciones 
+    // Tipo 2: Para más función de perfil 
       if(tipo == 1){
         if(modPerfil){
-          setModPerfil(false)
-        }
-        setShowNotifications(!showNotifications)
+        setModPerfil(false)
+      }
+      setShowNotifications(!showNotifications)
       }else {
         if(showNotifications){
-          setShowNotifications(false)
-        }
-        setModPerfil(!modPerfil)
+        setShowNotifications(false)
       }
+      setModPerfil(!modPerfil)
+    }
   }
 
   const abrirMiniVentanaMobile = ({tipo}) => {
-      // Tipo 1: Para notificaciones 
-      // Tipo 2: Para más función de perfil 
+    // Tipo 1: Para notificaciones 
+    // Tipo 2: Para más función de perfil 
       if(tipo == 1){
         if(modPerfilMobile){
-          setModPerfilMobile(false)
-        }
-        setShowNotificationsMobile(!showNotifications)
+        setModPerfilMobile(false)
+      }
+      setShowNotificationsMobile(!showNotifications)
       }else {
         if(showNotificationsMobile){
-          setShowNotificationsMobile(false)
-        }
-        setModPerfilMobile(!modPerfil)
+        setShowNotificationsMobile(false)
       }
+      setModPerfilMobile(!modPerfil)
+    }
   }
 
   return (
@@ -110,162 +122,171 @@ function HeaderPrincipal() {
 
           </div>
 
-          {/* Nombre */}
-          <p
-            className="text-base leading-none self-center"
-            style={{ cursor: 'default' }} // evita la rayita de texto
-          >
-            Richard Favio Asturimac Medina
-          </p>
+            {/* Nombre */}
+            <p
+              className="text-base leading-none self-center"
+              style={{ cursor: 'default' }} // evita la rayita de texto
+            >
+              {usuarioGlobal?.l_nomUsua} {usuarioGlobal?.l_apellUsua}
+            </p>
 
 
-          {/* Icono usuario */}
-          <div className="relative">
+            {/* Icono usuario */}
+            <div className="relative">
               <FontAwesomeIcon
-            icon={faCircleUser}
-            className="text-4xl text-bg-gray-100 cursor-pointer hover:text-[#5F16BF] self-center"
+                icon={faCircleUser}
+                className="text-4xl text-bg-gray-100 cursor-pointer hover:text-[#5F16BF] self-center"
             onClick={() => abrirMiniVentana({tipo:2})}
-          />
-          {modPerfil && (
-              <div className="absolute right-0 mt-2 w-90 bg-white shadow-xl rounded-lg z-50 h-24 pb-1.5">
-                <div className="px-4 py-2 ">
-                  {/* Editar cuenta */}
-                  <div
-                    className="flex items-center gap-2 px-2 py-1 hover:bg-gray-100 rounded cursor-pointer"
-                    onClick={() => {
-                      setModPerfil(false);
-                      setEditPerfilOpen(true);
-                    }}
+              />
+              {modPerfil && (
+                <div className="absolute right-0 mt-2 w-90 bg-white shadow-xl rounded-lg z-50 h-24 pb-1.5">
+                  <div className="px-4 py-2 ">
+                    {/* Editar cuenta */}
+                    <div
+                      className="flex items-center gap-2 px-2 py-1 hover:bg-gray-100 rounded cursor-pointer"
+                      onClick={() => {
+                        setModPerfil(false);
+                        setEditPerfilOpen(true);
+                      }}
 
-                  >
-                    <FontAwesomeIcon icon={faPen} />
-                    <p className="m-0">Editar cuenta</p>
-                  </div>
-                  
+                    >
+                      <FontAwesomeIcon icon={faPen} />
+                      <p className="m-0">Editar cuenta</p>
+                    </div>
 
-                  {/* Cerrar sesión */}
-                  <div className="flex items-center gap-2 px-2 py-1 mt-2 text-red-600 hover:bg-gray-100 rounded cursor-pointer">
-                    <FontAwesomeIcon icon={faRightToBracket} />
-                    <a href="#" className="m-0 text-red-600">
-                      Cerrar sesión
-                    </a>
+
+                    {/* Cerrar sesión */}
+                    <div className="flex items-center gap-2 px-2 py-1 mt-2 text-red-600 hover:bg-gray-100 rounded cursor-pointer"
+                      onClick={() => {
+                        logout()
+                        navigate("/")
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faRightToBracket} />
+                      <a href="#" className="m-0 text-red-600">
+                        Cerrar sesión
+                      </a>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-            )}
+              )}
+            </div>
+
+
           </div>
 
-          
+          {/* Botón menú hamburguesa y notificación (móvil) */}
+          {/* Botón notificaciones (móvil) */}
+          <button
+            className="lg:hidden text-gray-900"
+            onClick={() => {
+              setShowNotificationsMobile(!showNotificationsMobile)
+              setIsOpen(false) // Cierra menú principal si estaba abierto
+            }}
+            aria-label="Notificaciones"
+          >
+            <FontAwesomeIcon icon={faBell} size="lg" />
+          </button>
+
+          {/* Menú de notificaciones móvil */}
+          {showNotificationsMobile && (
+            <div className="lg:hidden absolute top-[4.5rem] left-1/2 transform -translate-x-1/2 w-[90%] bg-white shadow-xl rounded-lg z-50 max-h-64 overflow-y-auto animate-fade-in">
+              <p className="px-4 py-3 border-b border-gray-200 font-semibold text-gray-800">Notificaciones</p>
+              <ul className=" text-sm text-gray-700">
+                {[
+                  "Nueva notificación 1",
+                  "Nueva notificación 2",
+                  "Recordatorio de sesión",
+                  "Mensaje del cuidador",
+                  "Evento disponible"
+                ].map((notif, idx) => (
+                  <li
+                    key={idx}
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                  >
+                    {notif}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+
+
+          <button
+            className="lg:hidden text-gray-900"
+            onClick={
+            () => {setIsOpen(!isOpen)
+            setShowNotificationsMobile(false)}
+            }
+            aria-label="Menú"
+          >
+            <FontAwesomeIcon icon={isOpen ? faTimes : faBars} size="lg" />
+          </button>
         </div>
 
-        {/* Botón menú hamburguesa y notificación (móvil) */}
-        {/* Botón notificaciones (móvil) */}
-        <button
-          className="lg:hidden text-gray-900"
-          onClick={() => {
-            setShowNotificationsMobile(!showNotificationsMobile)
-            setIsOpen(false) // Cierra menú principal si estaba abierto
-          }}
-          aria-label="Notificaciones"
-        >
-          <FontAwesomeIcon icon={faBell} size="lg" />
-        </button>
+        {/* Menú móvil */}
+        {isOpen && (
+          <div className="lg:hidden bg-white mt-4 rounded-xl shadow-lg px-4 py-4 flex flex-col items-center gap-3 animate-fade-in">
+            {[
+              { nombre: "Comunidad", enlace: "#comunidad" },
+              { nombre: "Sesiones", enlace: "#sesiones" },
+              { nombre: "Membresía", enlace: "#membresía" },
+            ].map((item, index) => (
+              <a
+                key={index}
+                href={item.enlace}
+                className="w-full text-center text-base text-gray-500 font-medium py-2 px-4 rounded-lg transition-all duration-300 
+                hover:bg-[#ede9fe] hover:text-[#3a21b6] hover:ring-2 hover:ring-[#bfbdffb7] hover:shadow-lg"
+              >
+                {item.nombre}
+              </a>
+            ))}
+            <hr className="w-full border-t border-[#e0d8fc] my-3" />
 
-        {/* Menú de notificaciones móvil */}
-        {showNotificationsMobile && (
-          <div className="lg:hidden absolute top-[4.5rem] left-1/2 transform -translate-x-1/2 w-[90%] bg-white shadow-xl rounded-lg z-50 max-h-64 overflow-y-auto animate-fade-in">
-            <p className="px-4 py-3 border-b border-gray-200 font-semibold text-gray-800">Notificaciones</p>
-            <ul className=" text-sm text-gray-700">
-              {[
-                "Nueva notificación 1",
-                "Nueva notificación 2",
-                "Recordatorio de sesión",
-                "Mensaje del cuidador",
-                "Evento disponible"
-              ].map((notif, idx) => (
-                <li
-                  key={idx}
-                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                >
-                  {notif}
-                </li>
-              ))}
-            </ul>
+            {/* Usuario + notificaciones (móvil) */}
+            <div className="flex flex-col items-center gap-2 text-gray-700 font-medium">
+              <FontAwesomeIcon
+                icon={faCircleUser}
+                className="text-3xl text-[#5F16BF] hover:text-[#3b0ca3]"
+              />
+              <p className="text-base text-center leading-tight">
+                {usuarioGlobal?.l_nomUsua} {usuarioGlobal?.l_apellUsua}
+              </p>
+            </div>
+            <div className="">
+              {/* Editar cuenta */}
+              <div
+                className="flex items-center gap-2 px-2 py-1  rounded cursor-pointer transition-all duration-300 
+                hover:bg-[#ede9fe] hover:text-[#3a21b6] hover:ring-2 hover:ring-[#bfbdffb7] hover:shadow-lg "
+                onClick={() => setEditPerfilOpen(true)}
+              >
+                <FontAwesomeIcon icon={faPen} />
+                <p className="m-0 ">Editar cuenta</p>
+              </div>
+
+
+              {/* Cerrar sesión */}
+              <div className="flex items-center gap-2 px-2 py-1 mt-2 text-red-600  rounded cursor-pointer transition-all duration-300 
+                hover:bg-[#ede9fe] hover:text-[#3a21b6] hover:ring-2 hover:ring-[#bfbdffb7] hover:shadow-lg"
+                onClick={() => {
+                  logout()
+                  navigate("/")
+                }}>
+                <FontAwesomeIcon icon={faRightToBracket} />
+                <a href="#" className="m-0 text-red-600">
+                  Cerrar sesión
+                </a>
+              </div>
+            </div>
           </div>
         )}
 
 
+      </nav>
+      <ModalEditPerfil open={editPerfilOpen} onOpenChange={setEditPerfilOpen} />
 
-        <button
-          className="lg:hidden text-gray-900"
-          onClick={
-            () => {setIsOpen(!isOpen)
-            setShowNotificationsMobile(false)}
-          }
-          aria-label="Menú"
-        >
-          <FontAwesomeIcon icon={isOpen ? faTimes : faBars} size="lg" />
-        </button>
-      </div>
-
-      {/* Menú móvil */}
-      {isOpen && (
-        <div className="lg:hidden bg-white mt-4 rounded-xl shadow-lg px-4 py-4 flex flex-col items-center gap-3 animate-fade-in">
-          {[
-            { nombre: "Comunidad", enlace: "#comunidad" },
-            { nombre: "Sesiones", enlace: "#sesiones" },
-            { nombre: "Membresía", enlace: "#membresía" },
-          ].map((item, index) => (
-            <a
-              key={index}
-              href={item.enlace}
-              className="w-full text-center text-base text-gray-500 font-medium py-2 px-4 rounded-lg transition-all duration-300 
-                hover:bg-[#ede9fe] hover:text-[#3a21b6] hover:ring-2 hover:ring-[#bfbdffb7] hover:shadow-lg"
-            >
-              {item.nombre}
-            </a>
-          ))}
-          <hr className="w-full border-t border-[#e0d8fc] my-3" />
-
-          {/* Usuario + notificaciones (móvil) */}
-          <div className="flex flex-col items-center gap-2 text-gray-700 font-medium">
-            <FontAwesomeIcon
-              icon={faCircleUser}
-              className="text-3xl text-[#5F16BF] hover:text-[#3b0ca3]"
-            />
-            <p className="text-base text-center leading-tight">
-              Richard Favio Asturimac Medina
-            </p>
-          </div>
-          <div className="">
-                  {/* Editar cuenta */}
-                  <div
-                    className="flex items-center gap-2 px-2 py-1  rounded cursor-pointer transition-all duration-300 
-                hover:bg-[#ede9fe] hover:text-[#3a21b6] hover:ring-2 hover:ring-[#bfbdffb7] hover:shadow-lg "
-                    onClick={() => setEditPerfilOpen(true)}
-                  >
-                    <FontAwesomeIcon icon={faPen} />
-                    <p className="m-0 ">Editar cuenta</p>
-                  </div>
-                  
-
-                  {/* Cerrar sesión */}
-                  <div className="flex items-center gap-2 px-2 py-1 mt-2 text-red-600  rounded cursor-pointer transition-all duration-300 
-                hover:bg-[#ede9fe] hover:text-[#3a21b6] hover:ring-2 hover:ring-[#bfbdffb7] hover:shadow-lg">
-                    <FontAwesomeIcon icon={faRightToBracket} />
-                    <a href="#" className="m-0 text-red-600">
-                      Cerrar sesión
-                    </a>
-                  </div>
-          </div>
-        </div>
-      )}
-      
-      
-    </nav>
-       <ModalEditPerfil open={editPerfilOpen} onOpenChange={setEditPerfilOpen} />
-      
     </div>
   );
 }

@@ -16,7 +16,7 @@ import { MdEmail, MdLock } from "react-icons/md";
 
 
 //Importar servicios 
-import { verificarEmail, verificarCodigo, registrarCuidadorNoProfesional  } from '../services/autenticacionService'
+import { verificarEmail, verificarCodigo, registrarCuidadorNoProfesional } from '../services/autenticacionService'
 import { setGlobalLoadingHandler } from "../api/apiAutenticacion";
 import Loading from "../layouts/Loading";
 
@@ -36,16 +36,45 @@ function Register() {
   const [fechaNacimiento, setFechaNacimiento] = useState("");
   const [aceptoTerminos, setAceptoTerminos] = useState(false);
   const [loading, setLoading] = useState(false)
-  
+
   //Use effect para el icono de carga
   useEffect(() => {
     setGlobalLoadingHandler(setLoading);
   }, [])
 
 
+  //Seteo de contraseña 
+  const actNuevaContrasena = (contrasena) => {
+    if (contrasena === '') {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Inserta una contraseña válida para continuar',
+        confirmButtonText: 'Entendido',
+      })
+      return
+    }
+
+    setPassword(contrasena)
+  }
+
+  const actRepetirContrasena = (repetirContrasena) => {
+    if (repetirContrasena === '') {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Repite la contraseña para continuar',
+        confirmButtonText: 'Entendido',
+      })
+      return
+    }
+
+    setPassword(repetirContrasena)
+  }
+
   // Tiempo para volver a enviar otro código 
   const [timer, setTimer] = useState(0)
-   useEffect(() => {
+  useEffect(() => {
     let interval = null;
     if (timer > 0) {
       interval = setInterval(() => {
@@ -58,7 +87,7 @@ function Register() {
   }, [timer])
 
   const startTimer = () => {
-    setTimer(200); 
+    setTimer(200);
   };
 
 
@@ -80,7 +109,7 @@ function Register() {
       return;
     }
 
-  const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailValido.test(email)) {
       Swal.fire({
         icon: 'error',
@@ -100,7 +129,7 @@ function Register() {
             icon: 'warning',
             title: 'Código ya fue enviado',
             text: 'Ya se ha enviado un código recientemente a tu correo.',
-            confirmButtonText: 'Entendido',
+            //confirmButtonText: 'Entendido',
             footer: '<a href="#" id="ir-step-2">Haz clic aquí para ingresar el código</a>',
           })
           return
@@ -119,12 +148,34 @@ function Register() {
       })
       .catch(error => {
         if (error.response && error.response.status === 400) {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Opps!! ' + error.response.data?.mensaje ,
-            confirmButtonText: 'Entendido'
-          });
+          if (error.response.data?.mensaje === 'Se intento crear una cuenta con este correo electrónico') {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Correo ya fue utilizado',
+              text: 'Opps!! ' + error.response.data?.mensaje,
+              confirmButtonText: 'Entendido',
+              footer: '<a href="#" id="ir-step-3">Haz clic aquí para ingresar continuar con el registro</a>',
+              didOpen: () => {
+                const link = document.getElementById('ir-step-3')
+                if(link){
+                  link.addEventListener('click', (e) => {
+                    e.preventDefault()
+                    setStep(3)
+                    Swal.close()
+                  })
+                }
+              }
+            })
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Opps!! ' + error.response.data?.mensaje,
+              confirmButtonText: 'Entendido'
+            })
+          }
+
+
         } else {
           Swal.fire({
             icon: 'error',
@@ -142,32 +193,33 @@ function Register() {
     e.preventDefault()
 
 
-    if (!code.trim()){
-        Swal.fire(
-          {icon:'error',
+    if (!code.trim()) {
+      Swal.fire(
+        {
+          icon: 'error',
           title: 'Error',
           text: 'Inserta el código enviado al correo electrónico para continuar',
           confirmButtonText: 'Entendido'
         }
-        )
-        return
+      )
+      return
     }
 
-    try{
-      verificarCodigo(email,code).then((response) => {
-        if(!response.data.valido){
+    try {
+      verificarCodigo(email, code).then((response) => {
+        if (!response.data.valido) {
           Swal.fire(
             {
-              icon:'error',
+              icon: 'error',
               title: 'Error',
               text: 'El código insertado no es correcto',
               confirmButtonText: 'Entendido'
             }
           )
-        }else{
+        } else {
           Swal.fire(
             {
-              icon:'success',
+              icon: 'success',
               title: 'Existo',
               text: 'El código insertado  es correcto',
               confirmButtonText: 'Entendido'
@@ -180,7 +232,7 @@ function Register() {
 
       })
 
-    }catch(err){
+    } catch (err) {
       console.error("Existe un error: ", err)
       Swal.fire({
         icon: 'error',
@@ -202,7 +254,7 @@ function Register() {
             text: "Se ha reenviado el código a tu correo.",
             confirmButtonText: "Entendido",
           });
-          startTimer(); 
+          startTimer();
         })
         .catch(() => {
           Swal.fire({
@@ -275,7 +327,7 @@ function Register() {
       await registrarCuidadorNoProfesional(data);
 
       // Solo navega si la respuesta fue exitosa
-      navigate("/sessions");
+      navigate("/login");
     } catch (err) {
       console.error("Existe un error: ", err);
 
@@ -318,26 +370,26 @@ function Register() {
     passwordStrength === "Muy segura"
       ? "text-green-600"
       : passwordStrength === "Segura"
-      ? "text-yellow-600"
-      : "text-red-600";
+        ? "text-yellow-600"
+        : "text-red-600";
 
   document.addEventListener('click', function (e) {
     if (e.target && e.target.id === 'ir-step-2') {
       e.preventDefault()
       setStep(2)
-      Swal.close() 
+      Swal.close()
     }
   })
 
-  
+
   return (
-  <div className="min-h-screen pb-16 bg-gradient-to-br from-[#835ec0] via-[#8d68e9de] to-[#5f4ec4] flex flex-col items-center">
+    <div className="min-h-screen pb-16 bg-gradient-to-br from-[#835ec0] via-[#8d68e9de] to-[#5f4ec4] flex flex-col items-center">
       {loading && <Loading></Loading>}
-      
+
       <HeaderMod />
-      
+
       <div className="relative bg-white border-4 mt-30 border-gray-100 px-8 py-10 rounded-3xl shadow-xl w-80 max-w-sm text-center before:content-[''] before:absolute before:top-4 before:left-4 before:w-70 before:h-[8px] before:bg-[#7F5AFA] after:content-[''] after:absolute after:bottom-3 after:left-4 after:w-70 after:h-[8px] after:bg-[#7F5AFA]">
-        
+
         {/* Logo y nombre de Alzhivida */}
         <div className="flex flex-col items-center mb-1">
           <img src={logoAlzhivida} alt="Logo" className="w-30 h-auto mb-2" />
@@ -350,26 +402,26 @@ function Register() {
               <span className="font-semibold">Recuerda: </span> Verificar el correo electrónico es importante antes de crear una cuenta
             </div>
             <form onSubmit={esEmailVerificado} className="space-y-4 mt-3 text-left">
-               <label className="block text-sm font-medium text-gray-700">Ingresa tu correo electrónico</label>
-                <div className="relative">
-                  <MdEmail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
-                  <input
-                    type="email"
-                    placeholder="Correo electrónico"
-                    className="w-full pl-10 pr-3 py-2 rounded-md bg-[#f5f5f5] border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#7F5AFA]"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
+              <label className="block text-sm font-medium text-gray-700">Ingresa tu correo electrónico</label>
+              <div className="relative">
+                <MdEmail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
+                <input
+                  type="text"
+                  placeholder="Correo electrónico"
+                  className="w-full pl-10 pr-3 py-2 rounded-md bg-[#f5f5f5] border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#7F5AFA]"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
 
-                <button
-                  type="submit"
-                  className="mt-4 w-full bg-[#7F5AFA] text-white font-semibold py-2 hover:bg-[#6a4fd2] transition"
-                >
-                  VERIFICAR CORREO
-                </button>
-              </form>
-                       
+              <button
+                type="submit"
+                className="mt-4 w-full bg-[#7F5AFA] text-white font-semibold py-2 hover:bg-[#6a4fd2] transition"
+              >
+                VERIFICAR CORREO
+              </button>
+            </form>
+
             <Link
               to="/login"
               className="block text-sm mt-3 text-center text-black cursor-pointer !no-underline"
@@ -395,15 +447,14 @@ function Register() {
               <p className="text-sm text-gray-600 text-left mt-1">
                 Volver a reenviar el código{" "}
                 <span
-                className={`text-purple-600 hover:underline ${
-                  timer > 0 ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
-                }`}
-                onClick={() => {
-                  if (timer === 0) reEnviarCodigo();
-                }}
-              >
-                {timer > 0 ? `(${formatTimer(timer)})` : "click aquí"}
-              </span>
+                  className={`text-purple-600 hover:underline ${timer > 0 ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+                    }`}
+                  onClick={() => {
+                    if (timer === 0) reEnviarCodigo();
+                  }}
+                >
+                  {timer > 0 ? `(${formatTimer(timer)})` : "click aquí"}
+                </span>
               </p>
               <button type="submit" className="mt-2 w-full bg-[#7F5AFA] text-white font-semibold py-2  hover:bg-[#6a4fd2] transition">
                 VERIFICAR CÓDIGO
@@ -428,8 +479,7 @@ function Register() {
                 placeholder="Escribe una contraseña"
                 className="w-full px-4 py-2 rounded bg-gray-100 border !focus:outline-none"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
+                onChange={(e) => actNuevaContrasena(e.target.value)}
               />
               <button
                 type="button"
@@ -448,10 +498,9 @@ function Register() {
               <input
                 type={showRepeatPassword ? "text" : "password"}
                 placeholder="Repetir la contraseña"
-                className="w-full px-4 py-2 rounded bg-gray-100 border !focus:outline-none"
+                className="w-full px-4 py-2  bg-gray-100 border !focus:outline-none"
                 value={repeatPassword}
-                onChange={(e) => setRepeatPassword(e.target.value)}
-                required
+                onChange={(e) => actRepetirContrasena(e.target.value)}
               />
               <button
                 type="button"
@@ -471,76 +520,76 @@ function Register() {
           </form>
         )}
 
-     {step === 4 && (
-        <form onSubmit={handleSubmitDatosPersonales} className="space-y-4 text-left">
-          <div>
-            <label className="block text-sm font-medium mb-1">Escriba su nombre</label>
-            <input
-              type="text"
-              placeholder="Nombres"
-              className="w-full px-4 py-2 rounded bg-gray-100 border !focus:outline-none"
-              value={nombres}
-              onChange={(e) => setNombres(e.target.value)}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">Escriba sus apellidos</label>
-            <input
-              type="text"
-              placeholder="Apellidos"
-              className="w-full px-4 py-2 rounded bg-gray-100 border focus:outline-none"
-              value={apellidos}
-              onChange={(e) => setApellidos(e.target.value)}
-            />
-          </div>
-
-          <div className="flex flex-col md:flex-row md:space-x-2 space-y-2 md:space-y-0">
-            <div className="w-full">
-              <label className="block text-sm font-medium mb-1">Seleccione su género</label>
-              <select
-                className="w-full px-4 py-2 rounded bg-gray-100 border focus:outline-none"
-                value={genero}
-                onChange={(e) => setGenero(e.target.value)}
-              >
-                <option value="">Género</option>
-                <option value="Femenino">Femenino</option>
-                <option value="Masculino">Masculino</option>
-                <option value="Otro">Otro</option>
-                <option value="Prefiero no decirlo">Prefiero no decirlo</option>
-              </select>
+        {step === 4 && (
+          <form onSubmit={handleSubmitDatosPersonales} className="space-y-4 text-left">
+            <div>
+              <label className="block text-sm font-medium mb-1">Escriba su nombre</label>
+              <input
+                type="text"
+                placeholder="Nombres"
+                className="w-full px-4 py-2 rounded bg-gray-100 border !focus:outline-none"
+                value={nombres}
+                onChange={(e) => setNombres(e.target.value)}
+              />
             </div>
 
-            <div className="w-full">
-              <label className="block text-sm font-medium mb-1">Seleccione su país</label>
-              <select
+            <div>
+              <label className="block text-sm font-medium mb-1">Escriba sus apellidos</label>
+              <input
+                type="text"
+                placeholder="Apellidos"
                 className="w-full px-4 py-2 rounded bg-gray-100 border focus:outline-none"
-                value={pais}
-                onChange={(e) => setPais(e.target.value)}
-              >
-                <option value="">País</option>
-                <option value="Argentina">Argentina</option>
-                <option value="Bolivia">Bolivia</option>
-                <option value="Chile">Chile</option>
-                <option value="Colombia">Colombia</option>
-                <option value="Costa Rica">Costa Rica</option>
-                <option value="Cuba">Cuba</option>
-                <option value="Ecuador">Ecuador</option>
-                <option value="España">España</option>
-                <option value="El Salvador">El Salvador</option>
-                <option value="Guatemala">Guatemala</option>
-                <option value="Honduras">Honduras</option>
-                <option value="México">México</option>
-                <option value="Nicaragua">Nicaragua</option>
-                <option value="Panamá">Panamá</option>
-                <option value="Paraguay">Paraguay</option>
-                <option value="Perú">Perú</option>
-                <option value="República Dominicana">República Dominicana</option>
-                <option value="Uruguay">Uruguay</option>
-                <option value="Venezuela">Venezuela</option>
-              </select>
+                value={apellidos}
+                onChange={(e) => setApellidos(e.target.value)}
+              />
             </div>
-          </div>
+
+            <div className="flex flex-col md:flex-row md:space-x-2 space-y-2 md:space-y-0">
+              <div className="w-full">
+                <label className="block text-sm font-medium mb-1">Seleccione su género</label>
+                <select
+                  className="w-full px-4 py-2 rounded bg-gray-100 border focus:outline-none"
+                  value={genero}
+                  onChange={(e) => setGenero(e.target.value)}
+                >
+                  <option value="">Género</option>
+                  <option value="Femenino">Femenino</option>
+                  <option value="Masculino">Masculino</option>
+                  <option value="Otro">Otro</option>
+                  <option value="Prefiero no decirlo">Prefiero no decirlo</option>
+                </select>
+              </div>
+
+              <div className="w-full">
+                <label className="block text-sm font-medium mb-1">Seleccione su país</label>
+                <select
+                  className="w-full px-4 py-2 rounded bg-gray-100 border focus:outline-none"
+                  value={pais}
+                  onChange={(e) => setPais(e.target.value)}
+                >
+                  <option value="">País</option>
+                  <option value="Argentina">Argentina</option>
+                  <option value="Bolivia">Bolivia</option>
+                  <option value="Chile">Chile</option>
+                  <option value="Colombia">Colombia</option>
+                  <option value="Costa Rica">Costa Rica</option>
+                  <option value="Cuba">Cuba</option>
+                  <option value="Ecuador">Ecuador</option>
+                  <option value="España">España</option>
+                  <option value="El Salvador">El Salvador</option>
+                  <option value="Guatemala">Guatemala</option>
+                  <option value="Honduras">Honduras</option>
+                  <option value="México">México</option>
+                  <option value="Nicaragua">Nicaragua</option>
+                  <option value="Panamá">Panamá</option>
+                  <option value="Paraguay">Paraguay</option>
+                  <option value="Perú">Perú</option>
+                  <option value="República Dominicana">República Dominicana</option>
+                  <option value="Uruguay">Uruguay</option>
+                  <option value="Venezuela">Venezuela</option>
+                </select>
+              </div>
+            </div>
 
             <div>
               <label className="block text-sm font-medium mb-1">Fecha de nacimiento</label>

@@ -115,6 +115,13 @@ const AutenticacionController = {
                 usuarioRecuperado: resultado
             })
         }catch(error){
+            if (error.message == 'La contraseña no es la correcta') {
+            return res.status(401).json({
+                success: false,
+                mensaje: 'Correo o contraseña incorrectos'
+            });
+        }
+
             res.status(500).json({
                 success: false, 
                 mensaje: error.message
