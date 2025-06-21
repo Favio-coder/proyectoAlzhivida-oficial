@@ -1,2 +1,3 @@
 # .gitignore
 backend/src/config/serviceAccountKey.json
+frontend/.env
