@@ -6,19 +6,30 @@ import {
   faTrash,
   faXmark,
   faPaperclip,
-  faFloppyDisk
+  faFloppyDisk,
+  faEye, faEyeSlash
 } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
+
+
+//Invocar Store
+import { useAuthStore } from "../store/authStore";
 
 export default function ModalEditPerfil({ open, onOpenChange }) {
   const [openContrasena, setOpenContrasena] = useState(false);
 
+  const usuario = useAuthStore((state) => state.user)
+
+  console.log("Usuario del store: ", usuario)
+
   const [form, setForm] = useState({
-    nombre: "Richard Favio",
-    apellido: "Asturimac Medina",
-    genero: "Masculino",
-    pais: "Perú",
-    nacimiento: "2005-02-18",
+    nombre: usuario?.l_nomUsua || "",
+    apellido: usuario?.l_apellUsua || "",
+    genero: usuario?.l_genUsua || "",
+    pais: usuario?.l_paisUsua || "",
+    nacimiento: usuario?.f_nacimiento
+      ? new Date(usuario.f_nacimiento).toISOString().split("T")[0]
+      : ""
   });
 
   const [preview, setPreview] = useState("");
@@ -51,6 +62,7 @@ export default function ModalEditPerfil({ open, onOpenChange }) {
            -translate-x-1/2 -translate-y-1/2 z-50 shadow-xl
            max-h-[90vh] overflow-y-auto"
           >
+            <Dialog.Title className="sr-only">Editar perfil de usuario</Dialog.Title>
             {/* Cabecera */}
             <div className="bg-[#8a6fff] text-white flex justify-between items-center px-6 py-2 rounded-t-2xl">
               <h2 className="text-lg font-semibold flex items-center">
@@ -87,18 +99,71 @@ export default function ModalEditPerfil({ open, onOpenChange }) {
 
               {/* Formulario */}
               <div className="grid grid-cols-2 gap-4">
-                {["nombre", "apellido", "genero", "pais"].map((campo) => (
-                  <div key={campo}>
-                    <label className="text-sm font-semibold capitalize">{campo}:</label>
-                    <input
-                      type="text"
-                      name={campo}
-                      value={form[campo]}
-                      onChange={handleChange}
-                      className="mt-1 w-full bg-gray-100 px-3 py-2 rounded-md text-sm"
-                    />
-                  </div>
-                ))}
+                {/* Nombre */}
+                <div>
+                  <label className="text-sm font-semibold">Nombre:</label>
+                  <input
+                    type="text"
+                    name="nombre"
+                    value={form.nombre}
+                    onChange={handleChange}
+                    className="mt-1 w-full bg-gray-100 px-3 py-2 rounded-md text-sm"
+                  />
+                </div>
+
+                {/* Apellido */}
+                <div>
+                  <label className="text-sm font-semibold">Apellido:</label>
+                  <input
+                    type="text"
+                    name="apellido"
+                    value={form.apellido}
+                    onChange={handleChange}
+                    className="mt-1 w-full bg-gray-100 px-3 py-2 rounded-md text-sm"
+                  />
+                </div>
+
+                {/* Género */}
+                <div>
+                  <label className="text-sm font-semibold">Género:</label>
+                  <select
+                    name="genero"
+                    value={form.genero}
+                    onChange={handleChange}
+                    className="mt-1 w-full bg-gray-100 px-3 py-2 rounded-md text-sm focus:outline-none"
+                  >
+                    <option value="">Género</option>
+                    <option value="Femenino">Femenino</option>
+                    <option value="Masculino">Masculino</option>
+                    <option value="Otro">Otro</option>
+                    <option value="Prefiero no decirlo">Prefiero no decirlo</option>
+                  </select>
+                </div>
+
+
+                {/* País (select) */}
+                <div>
+                  <label className="text-sm font-semibold">País:</label>
+                  <select
+                    name="pais"
+                    value={form.pais}
+                    onChange={handleChange}
+                    className="mt-1 w-full bg-gray-100 px-3 py-2 rounded-md text-sm"
+                  >
+                    <option value="">País</option>
+                    {[
+                      "Argentina", "Bolivia", "Chile", "Colombia", "Costa Rica", "Cuba", "Ecuador", "España",
+                      "El Salvador", "Guatemala", "Honduras", "México", "Nicaragua", "Panamá", "Paraguay",
+                      "Perú", "República Dominicana", "Uruguay", "Venezuela"
+                    ].map((pais) => (
+                      <option key={pais} value={pais}>
+                        {pais}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Fecha de nacimiento */}
                 <div className="col-span-2">
                   <label className="text-sm font-semibold">Fecha de nacimiento:</label>
                   <input
@@ -110,6 +175,7 @@ export default function ModalEditPerfil({ open, onOpenChange }) {
                   />
                 </div>
               </div>
+
             </div>
 
             {/* Botones */}
@@ -127,7 +193,7 @@ export default function ModalEditPerfil({ open, onOpenChange }) {
                 ELIMINAR CUENTA
               </button>
 
-              <button className="bg-[#8a6fff] text-white font-bold hover:bg-[#7b5ce7] py-2 px-4 rounded">
+              <button className="bg-[#8a6fff] text-white font-bold hover:bg-[#7b5ce7] py-2 px-4 rounded flex items-center">
                 <FontAwesomeIcon icon={faFloppyDisk} className="mr-2" />
                 GUARDAR CAMBIOS
               </button>
@@ -139,17 +205,17 @@ export default function ModalEditPerfil({ open, onOpenChange }) {
       {/* Modal cambiar contraseña */}
       <Dialog.Root open={openContrasena} onOpenChange={setOpenContrasena}>
         <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0  z-50" />
+          <Dialog.Overlay className="fixed inset-0 z-50" />
           <Dialog.Content
             onPointerDownOutside={(e) => e.preventDefault()}
             onInteractOutside={(e) => e.preventDefault()}
-            className="fixed top-1/2 left-1/2 w-[90vw] max-w-sm bg-white rounded-xl 
-                 -translate-x-1/2 -translate-y-1/2 shadow-xl z-60 overflow-hidden"
+            className="fixed top-1/2 left-1/2 w-[90vw] max-w-sm max-h-[90vh] bg-white rounded-xl 
+        -translate-x-1/2 -translate-y-1/2 shadow-xl z-60 overflow-y-auto"
           >
             {/* Cabecera */}
-            <div className="bg-[#8a6fff] text-white flex justify-between items-center px-4 py-2">
-              <h5 className="text-sm font-semibold flex items-center gap-2">
-                <FontAwesomeIcon icon={faPen} className="text-white" />
+            <div className="bg-[#8a6fff] text-white flex justify-between items-center px-4 py-2 rounded-t-xl">
+              <h5 className="text-base font-semibold flex items-center gap-2">
+                <FontAwesomeIcon icon={faPen} />
                 Cambio de contraseña
               </h5>
               <Dialog.Close asChild>
@@ -159,33 +225,43 @@ export default function ModalEditPerfil({ open, onOpenChange }) {
               </Dialog.Close>
             </div>
 
-            {/* Formulario */}
-            <div className="p-4 space-y-4">
-              {[
-                { label: "Contraseña anterior:", name: "oldPassword" },
-                { label: "Nueva contraseña:", name: "newPassword" },
-                { label: "Nueva contraseña:", name: "confirmPassword" },
-              ].map(({ label, name }, index) => (
-                <div key={index}>
-                  <label className="block text-sm font-bold mb-1">{label}</label>
-                  <input
-                    type="password"
-                    name={name}
-                    className="w-full bg-[#f3f3f3] rounded-lg px-4 py-2 text-sm outline-none"
-                  />
-                </div>
-              ))}
+            {/* Cuerpo del formulario */}
+            <form className="p-6 space-y-5 text-sm text-gray-800">
+              <div>
+                <label className="block mb-1 font-medium text-gray-700">
+                  Contraseña anterior
+                </label>
+                <input
+                  type="password"
+                  name="oldPassword"
+                  className="w-full bg-gray-100 px-4 py-2 rounded-lg outline-none focus:ring-2 focus:ring-[#8a6fff]"
+                />
+              </div>
+
+              <div>
+                <label className="block mb-1 font-medium text-gray-700">
+                  Nueva contraseña
+                </label>
+                <input
+                  type="password"
+                  name="newPassword"
+                  className="w-full bg-gray-100 px-4 py-2 rounded-lg outline-none focus:ring-2 focus:ring-[#8a6fff]"
+                />
+              </div>
+
+
 
               <button
-                className="w-full py-2 rounded bg-[#8a6fff] text-white font-bold uppercase text-sm hover:bg-[#7a5be0]"
                 type="submit"
+                className="w-full mt-1 py-2 bg-[#8a6fff] text-white rounded-lg font-semibold hover:bg-[#7a5be0] transition duration-200"
               >
                 Guardar cambios
               </button>
-            </div>
+            </form>
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>
+
     </>
   );
 }

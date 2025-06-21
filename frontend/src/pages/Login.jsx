@@ -22,6 +22,9 @@ import { loginUsuario } from "../services/autenticacionService";
 import { useAuthStore } from "../store/authStore";
 
 
+//Mock
+import { mockUser, mockToken } from "../mock/mockDevUser";
+
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -31,6 +34,8 @@ function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+
+    const esMock = import.meta.env.VITE_MODO_MOCK === "true"
 
     const dataEnviar = {
       correo: email,
@@ -49,10 +54,22 @@ function Login() {
     setLoading(true)
     try {
       await new Promise((res) => setTimeout(res, 1500))
+
+      if (esMock) {
+        // Simula retardo de red
+        await new Promise((res) => setTimeout(res, 1000));
+
+        useAuthStore.getState().login({
+          token: mockToken,
+          usuarioRecuperado: mockUser,
+        });
+
+        navigate("/principal");
+        return;
+      }
+
       loginUsuario(dataEnviar)
         .then(response => {
-          console.log("Respuesta de la api: ", response)
-
           useAuthStore.getState().login({
             token: response.data.token,
             usuarioRecuperado: response.data.usuarioRecuperado
@@ -61,12 +78,23 @@ function Login() {
           navigate("/principal");
         })
         .catch(error => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo iniciar sesión, intentalo más tarde',
+            confirmButtonText: 'Entendido'
+          })
           console.error("Error en login:", error);
         });
 
       //navigate("/principal");
     } catch (error) {
-
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo iniciar sesión, intentalo más tarde',
+        confirmButtonText: 'Entendido'
+      })
     } finally {
       setLoading(false)
     }

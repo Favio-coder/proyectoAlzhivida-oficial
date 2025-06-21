@@ -7,6 +7,8 @@ const jwt = require('jsonwebtoken')
 //Importar servicios
 const AutenticacionService = require('../services/AutenticacionService')
 
+//Llamar bucket 
+const upload = require('../middleware/upload')
 
 const AutenticacionController = {
     async buscarId(req, res) {
@@ -38,13 +40,17 @@ const AutenticacionController = {
 
     crearUsuario: async (req,res) => {
         try{
-        const datosUsuario = req.body 
+            const datosUsuario = req.body 
 
-        const resultado = await AutenticacionService.registrarCuidadorNoProfesional(datosUsuario)
+            if (req.file) {
+                datosUsuario.foto = `fotoUsuario/${req.file.filename}`;
+            }
 
-        res.status(201).json({
-            success: true, 
-            mensaje: resultado.mensaje,
+            const resultado = await AutenticacionService.registrarCuidadorNoProfesional(datosUsuario)
+
+            res.status(201).json({
+                success: true, 
+                mensaje: resultado.mensaje,
         })
         }catch(error){
             console.error("Error en el endpoint: ", error.message);

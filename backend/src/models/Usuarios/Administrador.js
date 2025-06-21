@@ -1,4 +1,4 @@
-const UserioModel = require('./UsuarioModel')
+const UsuarioModel = require('./UsuarioModel')
 
 class Administrador extends UsuarioModel {
   AsignarAccion(usuarioEstrategia) {
