@@ -100,7 +100,7 @@ function HeaderPrincipal() {
                 onClick={() => abrirMiniVentana({ tipo: 1 })}
               />
               {showNotifications && (
-                <div className="absolute right-0 mt-2 w-164 bg-white shadow-xl rounded-lg z-50 max-h-60 overflow-y-auto">
+                <div className="absolute right-0 top-[60px] w-164 bg-white shadow-xl rounded-lg z-50 max-h-60 overflow-y-auto">
                   <div className="px-4 py-3 border-b border-gray-200 font-semibold text-gray-800">
                     Notificaciones
                   </div>
@@ -136,7 +136,7 @@ function HeaderPrincipal() {
                 onClick={() => abrirMiniVentana({ tipo: 2 })}
               />
               {modPerfil && (
-                <div className="absolute right-0 mt-2 w-90 bg-white shadow-xl rounded-lg z-50 h-24 pb-1.5">
+                <div className="absolute right-0 top-[60px] w-90 bg-white shadow-xl rounded-lg z-50 pb-1.5 transition-all duration-200 ease-out">
                   <div className="px-4 py-2">
                     <div
                       className="flex items-center gap-2 px-2 py-1 hover:bg-gray-100 rounded cursor-pointer"
