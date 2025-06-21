@@ -64,11 +64,6 @@ function HeaderPrincipal() {
 
   return (
     <div>
-      {import.meta.env.VITE_MODO_MOCK === "true" && (
-        <div className="fixed top-[90px] left-1/2 transform -translate-x-1/2 z-40 bg-yellow-100 text-yellow-700 px-4 py-2 rounded-md text-sm font-semibold shadow-md">
-          ⚠️ Estás en modo de desarrollo (mock).
-        </div>
-      )}
       <nav className="bg-white shadow-xl p-2 w-[calc(100%-5rem)] mx-12 fixed top-2 z-50 rounded-xl">
         <div className="flex justify-between items-center max-w-7xl mx-auto sm:px-4 px-1 lg:px-0">
           {/* Logo + texto */}
