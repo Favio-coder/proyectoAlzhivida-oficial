@@ -115,7 +115,7 @@ function Home() {
           </div>
 
           {/* Servicios a la derecha */}
-          <div className="relative ml-4 pl-35 space-y-16 border-l-2 border-gray-300">
+          <div className="relative ml-4 pl-15 space-y-16 border-l-2 border-gray-300">
             {/* Línea con íconos */}
             <div className="absolute left-[-32px] top-0 space-y-29 pl-2">
               <div className="w-14 h-14 bg-[#726bff] rounded-md flex items-center justify-center">
@@ -223,22 +223,26 @@ function Home() {
 
         {/* Sección de docente */}
 
-      <section id="docente" className=" scroll-mt-24 flex flex-col md:flex-row items-center justify-between bg-white py-12 px-6 md:px-16">
+      <section id="docente" className="scroll-mt-24 flex flex-col md:flex-row items-center justify-between bg-white py-12 px-6 md:px-16">
         {/* Texto a la izquierda */}
         <div className="md:w-1/2 mb-10 md:mb-0">
           <h2 className="text-4xl !font-bold !text-[#5008c2] mb-10 px-12 ">
             ¿Quieres ser parte de nuestra red de docentes?
           </h2>
           <p className="text-lg text-gray-600 mb-12 px-12 !mt-6">
-            En nuestra red de docentes crece tu marca persona como profesional, contactando con personas que necesitan tu ayuda y teniendo tu publico en esta comunidad.
+            En nuestra red de docentes crece tu marca personal como profesional, contactando con personas que necesitan tu ayuda y teniendo tu público en esta comunidad.
           </p>
           <div className="px-12 !mt-6">
-            <button className="bg-[#8a42ff] text-white px-6 py-2 !rounded-xl text-lg hover:bg-[#6136ff] transition-colors duration-300 mb-4">
-              Comunicarte con Alzhivida
-            </button>
+           <a
+            href="https://mail.google.com/mail/?view=cm&to=alzhivida@gmail.com&su=Solicitud%20para%20unirme%20a%20Alzhivida&body=Estimado%20equipo%20de%20Alzhivida,%0D%0A%0D%0AEstoy%20interesado%20en%20formar%20parte%20de%20su%20plataforma%20como%20docente.%20A%20continuación,%20les%20proporciono%20mis%20datos%20para%20su%20evaluación:%0D%0A%0D%0A-%20Nombre%20completo:%0D%0A-%20Profesión%20o%20experiencia:%0D%0A-%20Enlace%20a%20videos%20o%20contenido%20que%20planeo%20compartir%20(opcional):%0D%0A%0D%0AQuedo%20atento(a)%20a%20su%20respuesta.%20Muchas%20gracias.%0D%0A%0D%0ASaludos%20cordiales."
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-[#8a42ff] text-white px-6 py-2 rounded-xl text-lg hover:bg-[#6136ff] transition-colors duration-300 mb-4 inline-block !no-underline"
+          >
+            Comunicarte con Alzhivida
+          </a>
           </div>
         </div>
-
         {/* Imagen a la derecha */}
         <div className="md:w-1/2 flex justify-center">
           <img
