@@ -67,7 +67,7 @@ function HeaderPrincipal() {
       <nav className="bg-white shadow-xl p-2 w-[calc(100%-5rem)] mx-12 fixed top-2 z-50 rounded-xl">
         <div className="flex justify-between items-center max-w-7xl mx-auto sm:px-4 px-1 lg:px-0">
           {/* Logo + texto */}
-          <Link to="/" className="flex items-center gap-2 ml-2">
+          <Link to="/principal" className="flex items-center gap-2 ml-2">
             <img src={logoAlzhivida} alt="Logo" className="w-[70px] h-auto" />
             <div className="text-2xl font-bold text-[#5F16BF]">Alzhivida</div>
           </Link>
@@ -121,11 +121,13 @@ function HeaderPrincipal() {
               )}
             </div>
 
-            {/* Nombre centrado */}
-            <div className="flex items-center h-full">
-              <p className="text-base leading-none"> {(usuarioGlobal?.l_nomUsua && usuarioGlobal?.l_apellUsua)
-                ? `${usuarioGlobal.l_nomUsua} ${usuarioGlobal.l_apellUsua}`
-                : "Usuario invitado"}</p>
+           
+            <div className="flex items-start h-full pt-2">
+              <p className="text-base pandding-t-2 ">
+                {(usuarioGlobal?.l_nomUsua && usuarioGlobal?.l_apellUsua)
+                  ? `${usuarioGlobal.l_nomUsua} ${usuarioGlobal.l_apellUsua}`
+                  : "Usuario invitado"}
+              </p>
             </div>
 
             {/* Icono usuario */}
